@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +7,45 @@
     <title>Профиль</title>
 </head>
 <body>
-    <main>
-      <h1>Вы вошли в профиль</h1>
-      <button> Выйти</button>
-   </main>
-      <script src="/form.js" defer></script>
+    <div class="container">
+        <h2>Добро пожаловать в профиль!</h2>
+        <div id="userInfo">
+            <p>Загрузка информации...</p>
+        </div>
+        <div id="adminLink" style="display: none;">
+            <a href="/admin">Админ панель</a><br>
+        </div>
+        <a href="/logout">Выйти</a>
+    </div>
+
+    <script>
+        // Проверка авторизации и загрузка информации о пользователе
+        async function loadUserInfo() {
+            try {
+                const response = await fetch('/api/user-info');
+                if (response.ok) {
+                    const user = await response.json();
+                    
+                    document.getElementById('userInfo').innerHTML = `
+                        <p><strong>Логин:</strong> ${user.login}</p>
+                        <p><strong>Роль:</strong> ${user.role}</p>
+                    `;
+                    
+                    // Показываем ссылку на админку если пользователь админ
+                    if (user.role === 'Админ') {
+                        document.getElementById('adminLink').style.display = 'block';
+                    }
+                } else {
+                    // Если не авторизован - редирект на логин
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                window.location.href = '/login';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadUserInfo);
+    </script>
 </body>
 </html>

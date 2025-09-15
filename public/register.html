@@ -1,33 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style.css">
-    <title>Регистраци</title>
+    <title>Регистрация</title>
 </head>
 <body>
-    <main>
-      <div class="add-review-section">
-            <h3><i class="fas fa-edit"></i>Вход</h3>
-            <form id="review-form">
-                <div class="form-group">
-                    <label for="user-name">E-mail<span>*</span></label>
-                    <input type="email" id="user-email" name="user-email" placeholder="Введите e-mail" required>
-                </div>
-                <div class="form-group">
-                    <label for="user-name">Пароль<span>*</span></label>
-                    <input type="password" id="user-password" name="user-password" placeholder="Ввведите пароль" required>
-                </div>
-                        
-                <button type="submit" class="submit-btn">
-                    <i class="fas fa-paper-plane"></i>
-                    войти
-                </button>
-                <div id="message" class="mt-3"></div>
-            </form>
-        </div>
-   </main>
-      <script src="/form.js" defer></script>
+    <div class="container">
+        <h2>Регистрация</h2>
+        <form action="/register" method="POST">
+            <input type="text" name="login" placeholder="Логин" required>
+            <input type="password" name="password" placeholder="Пароль" required>
+            
+            <select name="roleId" id="roleSelect" required>
+                <option value="">-- Выберите роль --</option>
+                <!-- Роли будут загружены через JavaScript -->
+            </select>
+            
+            <button type="submit">Зарегистрироваться</button>
+        </form>
+        <a href="/login">Уже есть аккаунт? Войти</a>
+    </div>
+
+    <script>
+        // Загрузка ролей при открытии страницы
+        async function loadRoles() {
+            try {
+                console.log('Начинаем загрузку ролей...');
+                
+                const response = await fetch('/api/roles');
+                console.log('Ответ от сервера:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const roles = await response.json();
+                console.log('Получены роли:', roles);
+                
+                const select = document.getElementById('roleSelect');
+                
+                // Очищаем список, оставляя только первый option
+                while (select.options.length > 1) {
+                    select.remove(1);
+                }
+                
+                // Добавляем роли в выпадающий список
+                roles.forEach(role => {
+                    const option = document.createElement('option');
+                    option.value = role.id;
+                    option.textContent = role.name;
+                    select.appendChild(option);
+                });
+                
+                console.log('Роли успешно загружены в select');
+                
+            } catch (error) {
+                console.error('Ошибка загрузки ролей:', error);
+                
+                // Fallback: добавляем стандартные роли вручную
+                const select = document.getElementById('roleSelect');
+                const roles = [
+                    { id: 1, name: 'Админ' },
+                    { id: 2, name: 'Пользователь' }
+                ];
+                
+                roles.forEach(role => {
+                    const option = document.createElement('option');
+                    option.value = role.id;
+                    option.textContent = role.name;
+                    select.appendChild(option);
+                });
+                
+                console.log('Использованы стандартные роли');
+            }
+        }
+        
+        // Загружаем роли при загрузке страницы
+        document.addEventListener('DOMContentLoaded', loadRoles);
+        
+        // Также пробуем загрузить при фокусе на select (на случай если первая загрузка failed)
+        document.getElementById('roleSelect').addEventListener('focus', function() {
+            if (this.options.length <= 1) {
+                loadRoles();
+            }
+        });
+    </script>
 </body>
 </html>
