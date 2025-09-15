@@ -19,7 +19,6 @@
     </div>
 
     <script>
-        // Проверка авторизации и загрузка информации о пользователе
         async function loadUserInfo() {
             try {
                 const response = await fetch('/api/user-info');
@@ -31,12 +30,10 @@
                         <p><strong>Роль:</strong> ${user.role}</p>
                     `;
                     
-                    // Показываем ссылку на админку если пользователь админ
                     if (user.role === 'Админ') {
                         document.getElementById('adminLink').style.display = 'block';
                     }
                 } else {
-                    // Если не авторизован - редирект на логин
                     window.location.href = '/login';
                 }
             } catch (error) {

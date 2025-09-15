@@ -61,12 +61,10 @@ const User = sequelize.define(
 Role.hasMany(User, { foreignKey: "roleId" });
 User.belongsTo(Role, { foreignKey: 'roleId' });
 
-// Инициализация ролей при запуске
 async function initializeRoles() {
     try {
         await sequelize.sync({ force: false });
         
-        // Создаем стандартные роли если их нет
         const roles = ['Админ', 'Пользователь'];
         for (const roleName of roles) {
             await Role.findOrCreate({
@@ -95,7 +93,6 @@ app.use(
     })
 );
 
-// Исправление: правильное указание статической папки
 app.use(express.static(path.join(__dirname, 'public')));
 
 function isAuthenticated(req, res, next) {
@@ -121,12 +118,10 @@ function hasRole(roleName) {
     };
 }
 
-// Главная страница теперь всегда ведет на логин
 app.get('/', (req, res) => {
     res.redirect('/login');
 });
 
-// ИСПРАВЛЕНИЕ: Убрали лишнюю логику из GET /register
 app.get('/register', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'register.html'));
 });
@@ -196,7 +191,6 @@ app.get('/admin', isAuthenticated, hasRole('Админ'), (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
-// API для получения ролей (для формы регистрации)
 app.get('/api/roles', async (req, res) => {
     try {
         const roles = await Role.findAll();
@@ -206,7 +200,6 @@ app.get('/api/roles', async (req, res) => {
     }
 });
 
-// API для получения информации о текущем пользователе
 app.get('/api/user-info', isAuthenticated, async (req, res) => {
     try {
         const user = await User.findByPk(req.session.user.id, { include: Role });
@@ -220,7 +213,6 @@ app.get('/api/user-info', isAuthenticated, async (req, res) => {
     }
 });
 
-// API для получения списка пользователей (только для админов)
 app.get('/api/users', isAuthenticated, hasRole('Админ'), async (req, res) => {
     try {
         const users = await User.findAll({ include: Role });
@@ -234,10 +226,7 @@ app.get('/api/users', isAuthenticated, hasRole('Админ'), async (req, res) =
     }
 });
 
-// Запуск сервера
 app.listen(port, async () => {
     await initializeRoles();
-    console.log(`Сервер запущен на порту: ${port}`);
-    console.log(`Страница логина: http://localhost:${port}/login`);
     console.log(`Главная страница: http://localhost:${port}/`);
 });

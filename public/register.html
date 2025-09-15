@@ -15,7 +15,6 @@
             
             <select name="roleId" id="roleSelect" required>
                 <option value="">-- Выберите роль --</option>
-                <!-- Роли будут загружены через JavaScript -->
             </select>
             
             <button type="submit">Зарегистрироваться</button>
@@ -24,7 +23,6 @@
     </div>
 
     <script>
-        // Загрузка ролей при открытии страницы
         async function loadRoles() {
             try {
                 console.log('Начинаем загрузку ролей...');
@@ -41,12 +39,10 @@
                 
                 const select = document.getElementById('roleSelect');
                 
-                // Очищаем список, оставляя только первый option
                 while (select.options.length > 1) {
                     select.remove(1);
                 }
                 
-                // Добавляем роли в выпадающий список
                 roles.forEach(role => {
                     const option = document.createElement('option');
                     option.value = role.id;
@@ -59,7 +55,6 @@
             } catch (error) {
                 console.error('Ошибка загрузки ролей:', error);
                 
-                // Fallback: добавляем стандартные роли вручную
                 const select = document.getElementById('roleSelect');
                 const roles = [
                     { id: 1, name: 'Админ' },
@@ -77,10 +72,8 @@
             }
         }
         
-        // Загружаем роли при загрузке страницы
         document.addEventListener('DOMContentLoaded', loadRoles);
         
-        // Также пробуем загрузить при фокусе на select (на случай если первая загрузка failed)
         document.getElementById('roleSelect').addEventListener('focus', function() {
             if (this.options.length <= 1) {
                 loadRoles();

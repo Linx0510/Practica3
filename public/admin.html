@@ -22,10 +22,8 @@
     </div>
 
     <script>
-        // Проверка авторизации перед загрузкой пользователей
         async function checkAuthAndLoadUsers() {
             try {
-                // Сначала проверяем авторизацию
                 const authCheck = await fetch('/api/user-info');
                 if (!authCheck.ok) {
                     window.location.href = '/login';
@@ -39,7 +37,6 @@
                     return;
                 }
                 
-                // Если авторизован и админ - загружаем пользователей
                 await loadUsers();
             } catch (error) {
                 console.error('Ошибка:', error);
@@ -47,7 +44,6 @@
             }
         }
         
-        // Загрузка списка пользователей для админа
         async function loadUsers() {
             try {
                 const response = await fetch('/api/users');
